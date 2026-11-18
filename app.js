@@ -1,5 +1,4 @@
-import { artwork } from './artwork.js';
-import { styles, palettes, initial, styleById, normalizePair, paletteFor, pairId, pairName } from './catalog.js';
+import { styles, newStyles, palettes, initial, styleById, variationFor, normalizePair, paletteFor, pairId, pairName } from './catalog.js?v=2';
 
 const byId = id => document.getElementById(id);
 const svgNS = 'http://www.w3.org/2000/svg';
@@ -60,7 +59,7 @@ function icon(name) {
 }
 
 function logo(pair, label) {
-  const art = artwork[pair.style];
+  const art = variationFor(pair);
   const svg = document.createElementNS(svgNS, 'svg');
   svg.setAttribute('viewBox', art.viewBox);
   svg.setAttribute('focusable', 'false');
@@ -129,16 +128,46 @@ function refreshLikeButton() {
   byId('like-icon').firstElementChild.setAttribute('href', saved ? '#check' : '#heart');
 }
 
+const variationGrid = byId('variations');
+
+function showVariations(style, previous) {
+  const familyChanged = !variationGrid.childElementCount || previous.style !== style.id;
+  if (familyChanged) {
+    const choices = style.variations.map(variation => {
+      const button = makeNode('button', 'variation-card');
+      button.type = 'button';
+      const selectedMark = icon('check');
+      selectedMark.classList.add('variation-check');
+      button.append(makeNode('span', 'variation-art'), makeNode('span', 'variation-name', variation.name), selectedMark);
+      button.addEventListener('click', () => {
+        select({ ...current, variation: variation.id });
+        tell(pairName(current));
+      });
+      return button;
+    });
+    variationGrid.replaceChildren(...choices);
+  }
+  const redraw = familyChanged || current.colors.some((color, index) => color !== previous.colors[index]);
+  style.variations.forEach((variation, index) => {
+    const button = variationGrid.children[index];
+    button.setAttribute('aria-pressed', String(current.variation === variation.id));
+    if (redraw) button.firstElementChild.replaceChildren(logo({ ...current, variation: variation.id }));
+  });
+}
+
 function select(pair, persist = true) {
+  const previous = current;
   current = normalizePair(pair);
   const style = styleById.get(current.style);
   const palette = paletteFor(current.colors);
+  const variation = variationFor(current);
   byId('main-art').replaceChildren(logo(current, 'OptimizR GmbH, ' + pairName(current)));
-  byId('preview-style').textContent = style.name;
+  byId('preview-style').textContent = style.name + ' · ' + variation.name;
   byId('preview-palette').textContent = palette.name;
   byId('style-value').textContent = style.name;
   byId('choose-style').setAttribute('aria-label', 'Choose logo style, current style ' + style.name);
   byId('preview-inks').replaceChildren(...swatches(current.colors));
+  showVariations(style, previous);
   paletteButtons.forEach((button, index) => button.setAttribute('aria-pressed', String(palette === palettes[index])));
   customInputs.forEach(({ input, value }, index) => {
     input.value = current.colors[index];
@@ -150,33 +179,52 @@ function select(pair, persist = true) {
   }
 }
 
+function selectStyle(id) {
+  select({ ...current, style: id, variation: id === current.style ? current.variation : 'original' });
+}
+
 function stepStyle(delta) {
   const index = styles.findIndex(style => style.id === current.style);
-  select({ ...current, style: styles[(index + delta + styles.length) % styles.length].id });
+  selectStyle(styles[(index + delta + styles.length) % styles.length].id);
   tell(pairName(current));
 }
 byId('prev-style').addEventListener('click', () => stepStyle(-1));
 byId('next-style').addEventListener('click', () => stepStyle(1));
 
 const stylesDialog = byId('styles-dialog');
-byId('choose-style').addEventListener('click', () => {
-  const choices = styles.map(style => {
+const allStylesButton = byId('all-styles');
+const newStylesButton = byId('new-styles');
+byId('all-total').textContent = String(styles.length);
+byId('new-total').textContent = String(newStyles.length);
+const galleryOrder = [...newStyles, ...styles.filter(style => !newStyles.includes(style))];
+
+function showGallery(newOnly) {
+  allStylesButton.setAttribute('aria-pressed', String(!newOnly));
+  newStylesButton.setAttribute('aria-pressed', String(newOnly));
+  const choices = (newOnly ? newStyles : galleryOrder).map(style => {
     const button = makeNode('button', 'style-card');
     button.type = 'button';
     button.setAttribute('aria-pressed', String(style.id === current.style));
     const miniature = makeNode('span');
-    miniature.append(logo({ style: style.id, colors: current.colors }));
+    miniature.append(logo({ style: style.id, variation: 'original', colors: current.colors }));
     button.append(miniature, makeNode('span', 'style-name', style.name));
     button.addEventListener('click', () => {
-      select({ ...current, style: style.id });
+      selectStyle(style.id);
       stylesDialog.close();
       tell(pairName(current));
     });
     return button;
   });
   byId('styles-grid').replaceChildren(...choices);
+  byId('styles-grid').scrollTop = 0;
+}
+
+allStylesButton.addEventListener('click', () => showGallery(false));
+newStylesButton.addEventListener('click', () => showGallery(true));
+byId('choose-style').addEventListener('click', () => {
+  showGallery(newStylesButton.getAttribute('aria-pressed') === 'true');
   stylesDialog.showModal();
-  byId('styles-grid').querySelector('[aria-pressed="true"]').focus();
+  (newStylesButton.getAttribute('aria-pressed') === 'true' ? newStylesButton : allStylesButton).focus();
 });
 
 for (const dialog of document.querySelectorAll('dialog')) {

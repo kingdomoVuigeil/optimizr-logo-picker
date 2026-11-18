@@ -1,4 +1,11 @@
-export const styles = [
+import { artwork } from './artwork.js';
+import { classicVariations } from './classic-variations.js';
+import { controlVariations } from './control-variations.js';
+import { mechanismStyles } from './mechanism-styles.js';
+import { signatureStyles } from './signature-styles.js';
+
+const variationsByStyle = { ...classicVariations, ...controlVariations };
+const firstStyles = [
   { id: 'folded-belt', name: 'Folded Belt' },
   { id: 'roller-bend', name: 'Roller Bend' },
   { id: 'machine-plate', name: 'Machine Plate' },
@@ -9,7 +16,16 @@ export const styles = [
   { id: 'conveyor-flat', name: 'Conveyor Flat' },
   { id: 'conveyor-switch', name: 'Conveyor Switch' },
   { id: 'modular-r', name: 'Modular R' }
-];
+].map(style => ({
+  ...style,
+  variations: [
+    { id: 'original', name: 'Original', ...artwork[style.id] },
+    ...variationsByStyle[style.id]
+  ]
+}));
+
+export const newStyles = [...mechanismStyles, ...signatureStyles];
+export const styles = [...firstStyles, ...newStyles];
 
 export const palettes = [
   ['Petrol', 'Petrol and Turquoise', '#073B56', '#00899D', '#0ECBBF'],
@@ -26,14 +42,20 @@ export const palettes = [
   ['Chalk', 'Chalk and Racing Red', '#23272B', '#F3EDDE', '#BD2638']
 ].map(([short, name, ...colors]) => ({ short, name, colors }));
 
-export const initial = { style: styles[0].id, colors: palettes[6].colors };
+export const initial = { style: styles[0].id, variation: 'original', colors: palettes[6].colors };
 export const styleById = new Map(styles.map(style => [style.id, style]));
 const presetByColors = new Map(palettes.map(palette => [palette.colors.join('-'), palette]));
+
+export function variationFor(pair) {
+  return styleById.get(pair.style)?.variations.find(option => option.id === (pair.variation ?? 'original'));
+}
 
 export function normalizePair(value) {
   if (!value || !styleById.has(value.style) || !Array.isArray(value.colors) || value.colors.length !== 3) return null;
   if (!value.colors.every(color => typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color))) return null;
-  return { style: value.style, colors: value.colors.map(color => color.toUpperCase()) };
+  const variation = variationFor(value);
+  if (!variation) return null;
+  return { style: value.style, variation: variation.id, colors: value.colors.map(color => color.toUpperCase()) };
 }
 
 export function paletteFor(colors) {
@@ -41,9 +63,15 @@ export function paletteFor(colors) {
 }
 
 export function pairId(pair) {
-  return pair.style + '/' + pair.colors.map(color => color.slice(1)).join('-');
+  // Originals retain the keys used by the first edition of the picker.
+  const design = !pair.variation || pair.variation === 'original' ? pair.style : pair.style + '/' + pair.variation;
+  return design + '/' + pair.colors.map(color => color.slice(1)).join('-');
 }
 
 export function pairName(pair) {
-  return styleById.get(pair.style).name + ' ' + paletteFor(pair.colors).name;
+  const variation = variationFor(pair);
+  const names = [styleById.get(pair.style).name];
+  if (variation.id !== 'original') names.push(variation.name);
+  names.push(paletteFor(pair.colors).name);
+  return names.join(' ');
 }

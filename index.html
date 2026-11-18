@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#f8f8f5">
-  <meta name="description" content="Try OptimizR logo styles in different colors and copy the combinations you like.">
+  <meta name="description" content="Try OptimizR logo styles, variations and colors, and copy your favorite combinations.">
   <title>Logo picker · OptimizR GmbH</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./studio.css">
-  <script type="module" src="./app.js"></script>
+  <link rel="stylesheet" href="./studio.css?v=2">
+  <script type="module" src="./app.js?v=2"></script>
 </head>
 <body>
   <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -32,7 +32,7 @@
   <main class="wrap" id="picker">
     <div class="intro">
       <h1>Logo picker</h1>
-      <p>Choose a style and a palette, then save the combinations you like.</p>
+      <p>Choose a style, try its variations, and save the color combinations you like.</p>
     </div>
     <noscript><p class="notice">Turn on JavaScript to change the logo and save your combinations.</p></noscript>
     <div class="workspace">
@@ -43,7 +43,7 @@
           <div id="main-art"></div>
         </div>
         <figcaption>
-          <div class="caption-names"><strong id="preview-style">Folded Belt</strong><span id="preview-palette">Ultramarine and Coral</span></div>
+          <div class="caption-names"><strong id="preview-style">Folded Belt · Original</strong><span id="preview-palette">Ultramarine and Coral</span></div>
           <span class="ink-circles" id="preview-inks" aria-hidden="true"></span>
         </figcaption>
       </figure>
@@ -56,6 +56,8 @@
           <button id="prev-style" type="button" class="icon-button" aria-label="Previous logo style" title="Previous style"><svg class="icon" aria-hidden="true"><use href="#prev"/></svg></button>
           <button id="next-style" type="button" class="icon-button" aria-label="Next logo style" title="Next style"><svg class="icon" aria-hidden="true"><use href="#next"/></svg></button>
         </div>
+        <h2 class="control-label variation-heading" id="variation-label">Variation</h2>
+        <div id="variations" class="variations" role="group" aria-labelledby="variation-label"></div>
         <h2 class="control-label palette-heading" id="palette-label">Color palette</h2>
         <div id="palettes" class="palettes" role="group" aria-labelledby="palette-label"></div>
         <details class="custom" id="custom">
@@ -76,6 +78,10 @@
   </main>
   <dialog id="styles-dialog" aria-labelledby="styles-heading">
     <div class="dialog-head"><h2 id="styles-heading">Choose a logo style</h2><button type="button" class="icon-button plain" data-close aria-label="Close styles"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button></div>
+    <div class="gallery-filters" role="group" aria-label="Filter styles">
+      <button type="button" id="all-styles" aria-pressed="true">All styles <span id="all-total"></span></button>
+      <button type="button" id="new-styles" aria-pressed="false">New styles <span id="new-total"></span></button>
+    </div>
     <div class="style-grid" id="styles-grid"></div>
   </dialog>
   <dialog id="copy-dialog" aria-labelledby="copy-heading">
