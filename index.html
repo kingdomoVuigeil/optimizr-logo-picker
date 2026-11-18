@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f8f8f5">
+  <meta name="description" content="Try OptimizR logo styles in different colors and copy the combinations you like.">
+  <title>Logo picker · OptimizR GmbH</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./studio.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="heart" viewBox="0 0 24 24"><path d="M20.8 4.9a5.5 5.5 0 0 0-7.8 0L12 6l-1.1-1.1A5.5 5.5 0 0 0 3.1 12.7L12 21l8.9-8.3a5.5 5.5 0 0 0-.1-7.8Z"/></symbol>
+    <symbol id="copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15.5 5V4a1 1 0 0 0-1-1H5a2 2 0 0 0-2 2v9.5a1 1 0 0 0 1 1h1"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><path d="m4.5 12.5 4.7 4.6L19.5 6.8"/></symbol>
+    <symbol id="prev" viewBox="0 0 24 24"><path d="m14.5 5-7 7 7 7"/></symbol>
+    <symbol id="next" viewBox="0 0 24 24"><path d="m9.5 5 7 7-7 7"/></symbol>
+    <symbol id="down" viewBox="0 0 24 24"><path d="m5.5 9 6.5 6.5L18.5 9"/></symbol>
+    <symbol id="close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="sliders" viewBox="0 0 24 24"><path d="M3 7h6m4 0h8M3 17h10m4 0h4"/><circle cx="11" cy="7" r="2"/><circle cx="15" cy="17" r="2"/></symbol>
+    <symbol id="grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+  </svg>
+  <a class="skip" href="#picker">Skip to logo picker</a>
+  <header class="masthead">
+    <div class="wrap masthead-inner">
+      <a class="brand" href="#picker" aria-label="OptimizR GmbH logo picker"><span id="brand-art">OptimizR</span></a>
+      <a class="nav-link" href="#liked"><svg class="icon" aria-hidden="true"><use href="#heart"/></svg>Liked<span class="nav-count" id="nav-count">0</span></a>
+    </div>
+  </header>
+  <main class="wrap" id="picker">
+    <div class="intro">
+      <h1>Logo picker</h1>
+      <p>Choose a style and a palette, then save the combinations you like.</p>
+    </div>
+    <noscript><p class="notice">Turn on JavaScript to change the logo and save your combinations.</p></noscript>
+    <div class="workspace">
+      <figure class="preview">
+        <div class="canvas">
+          <i class="corner tl" aria-hidden="true"></i><i class="corner tr" aria-hidden="true"></i>
+          <i class="corner bl" aria-hidden="true"></i><i class="corner br" aria-hidden="true"></i>
+          <div id="main-art"></div>
+        </div>
+        <figcaption>
+          <div class="caption-names"><strong id="preview-style">Folded Belt</strong><span id="preview-palette">Ultramarine and Coral</span></div>
+          <span class="ink-circles" id="preview-inks" aria-hidden="true"></span>
+        </figcaption>
+      </figure>
+      <section class="controls" aria-label="Logo options">
+        <h2 class="control-label">Logo style</h2>
+        <div class="style-controls">
+          <button id="choose-style" class="style-select" type="button" aria-haspopup="dialog" aria-label="Choose logo style">
+            <svg class="icon" aria-hidden="true"><use href="#grid"/></svg><span id="style-value">Folded Belt</span><svg class="icon chevron" aria-hidden="true"><use href="#down"/></svg>
+          </button>
+          <button id="prev-style" type="button" class="icon-button" aria-label="Previous logo style" title="Previous style"><svg class="icon" aria-hidden="true"><use href="#prev"/></svg></button>
+          <button id="next-style" type="button" class="icon-button" aria-label="Next logo style" title="Next style"><svg class="icon" aria-hidden="true"><use href="#next"/></svg></button>
+        </div>
+        <h2 class="control-label palette-heading" id="palette-label">Color palette</h2>
+        <div id="palettes" class="palettes" role="group" aria-labelledby="palette-label"></div>
+        <details class="custom" id="custom">
+          <summary><svg class="icon" aria-hidden="true"><use href="#sliders"/></svg>Custom colors<svg class="icon chevron" aria-hidden="true"><use href="#down"/></svg></summary>
+          <div class="custom-grid" id="custom-inks"></div>
+        </details>
+        <button class="primary" id="like" type="button"><svg class="icon" id="like-icon" aria-hidden="true"><use href="#heart"/></svg><span id="like-label">Like combination</span></button>
+      </section>
+    </div>
+    <section class="liked" id="liked" aria-labelledby="liked-heading">
+      <div class="liked-heading">
+        <div><div class="liked-title"><h2 id="liked-heading" tabindex="-1">Liked combinations</h2><span class="section-count" id="list-count">0</span></div><p id="storage-note">Saved in this browser.</p></div>
+        <button class="secondary" id="copy-all" type="button" disabled><svg class="icon" aria-hidden="true"><use href="#copy"/></svg><span id="copy-label">Copy all</span></button>
+      </div>
+      <div class="empty" id="empty"><svg class="icon" aria-hidden="true"><use href="#heart"/></svg><span>Like a combination to add it here.</span></div>
+      <ol id="liked-list" class="liked-list"></ol>
+    </section>
+  </main>
+  <dialog id="styles-dialog" aria-labelledby="styles-heading">
+    <div class="dialog-head"><h2 id="styles-heading">Choose a logo style</h2><button type="button" class="icon-button plain" data-close aria-label="Close styles"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button></div>
+    <div class="style-grid" id="styles-grid"></div>
+  </dialog>
+  <dialog id="copy-dialog" aria-labelledby="copy-heading">
+    <div class="dialog-head"><h2 id="copy-heading">Copy your list</h2><button type="button" class="icon-button plain" data-close aria-label="Close copy dialog"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button></div>
+    <p>Select and copy the names below.</p><textarea id="copy-text" aria-label="Liked combination names" readonly rows="7"></textarea>
+  </dialog>
+  <div class="sr-only" role="status" aria-live="polite" id="status"></div>
+</body>
+</html>
