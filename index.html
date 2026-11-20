@@ -7,8 +7,8 @@
   <meta name="description" content="Try OptimizR logo styles, variations and colors, and copy your favorite combinations.">
   <title>Logo picker · OptimizR GmbH</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./studio.css?v=2">
-  <script type="module" src="./app.js?v=2"></script>
+  <link rel="stylesheet" href="./studio.css?v=3">
+  <script type="module" src="./app.js?v=3"></script>
 </head>
 <body>
   <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -21,12 +21,16 @@
     <symbol id="close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
     <symbol id="sliders" viewBox="0 0 24 24"><path d="M3 7h6m4 0h8M3 17h10m4 0h4"/><circle cx="11" cy="7" r="2"/><circle cx="15" cy="17" r="2"/></symbol>
     <symbol id="grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+    <symbol id="expand" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-7 7M10 20H4v-6m0 6 7-7"/></symbol>
   </svg>
   <a class="skip" href="#picker">Skip to logo picker</a>
   <header class="masthead">
     <div class="wrap masthead-inner">
       <a class="brand" href="#picker" aria-label="OptimizR GmbH logo picker"><span id="brand-art">OptimizR</span></a>
-      <a class="nav-link" href="#liked"><svg class="icon" aria-hidden="true"><use href="#heart"/></svg>Liked<span class="nav-count" id="nav-count">0</span></a>
+      <nav class="masthead-links" aria-label="Selections">
+        <a class="nav-link" href="#liked"><svg class="icon" aria-hidden="true"><use href="#heart"/></svg>Liked<span class="nav-count" id="nav-count">0</span></a>
+        <a class="nav-link" href="#sean-selection">Sean’s list</a>
+      </nav>
     </div>
   </header>
   <main class="wrap" id="picker">
@@ -75,6 +79,23 @@
       <div class="empty" id="empty"><svg class="icon" aria-hidden="true"><use href="#heart"/></svg><span>Like a combination to add it here.</span></div>
       <ol id="liked-list" class="liked-list"></ol>
     </section>
+    <section class="shared-selection" id="sean-selection" aria-labelledby="selection-heading">
+      <h2 id="selection-heading">Sean’s selection</h2>
+      <form id="selection-form">
+        <label for="selection-codes">Paste the combinations from Sean’s email, one per line.</label>
+        <textarea id="selection-codes" rows="3" spellcheck="false" autocomplete="off" aria-describedby="selection-feedback" placeholder="Folded Belt Ultramarine and Coral&#10;Scan Frame Iris Forest and Copper"></textarea>
+        <div class="selection-actions">
+          <button type="submit" class="primary">View selection</button>
+          <button type="button" class="secondary" id="clear-selection" hidden>Clear selection</button>
+        </div>
+      </form>
+      <p id="selection-feedback" role="status" aria-live="polite"></p>
+      <details class="unmatched" id="unmatched" hidden>
+        <summary id="unmatched-summary">Unrecognized lines</summary>
+        <pre id="unmatched-lines"></pre>
+      </details>
+      <ol class="selection-grid" id="shared-list" aria-label="Sean’s selected logos"></ol>
+    </section>
   </main>
   <dialog id="styles-dialog" aria-labelledby="styles-heading">
     <div class="dialog-head"><h2 id="styles-heading">Choose a logo style</h2><button type="button" class="icon-button plain" data-close aria-label="Close styles"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button></div>
@@ -87,6 +108,13 @@
   <dialog id="copy-dialog" aria-labelledby="copy-heading">
     <div class="dialog-head"><h2 id="copy-heading">Copy your list</h2><button type="button" class="icon-button plain" data-close aria-label="Close copy dialog"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button></div>
     <p>Select and copy the names below.</p><textarea id="copy-text" aria-label="Liked combination names" readonly rows="7"></textarea>
+  </dialog>
+  <dialog id="selection-dialog" aria-labelledby="detail-heading" aria-describedby="detail-palette">
+    <div class="dialog-head"><h2 id="detail-heading">Logo preview</h2><button type="button" class="icon-button plain" data-close aria-label="Close logo preview"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button></div>
+    <figure class="shared-preview">
+      <div id="detail-art"></div>
+      <figcaption><span id="detail-palette"></span><span id="detail-inks" class="ink-circles" aria-hidden="true"></span></figcaption>
+    </figure>
   </dialog>
   <div class="sr-only" role="status" aria-live="polite" id="status"></div>
 </body>

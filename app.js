@@ -1,9 +1,11 @@
 import { styles, newStyles, palettes, initial, styleById, variationFor, normalizePair, paletteFor, pairId, pairName } from './catalog.js?v=2';
+import { parseSelection } from './selection-import.js?v=3';
 
 const byId = id => document.getElementById(id);
 const svgNS = 'http://www.w3.org/2000/svg';
 const prefix = 'optimizr.logo-picker.v1.like.';
 const lastKey = 'optimizr.logo-picker.v1.current';
+const selectionKey = 'optimizr.logo-picker.v1.sean-selection';
 const favorites = new Map();
 let serial = 0;
 let storage;
@@ -302,9 +304,99 @@ byId('like').addEventListener('click', () => {
   tell('Liked ' + pairName(current));
 });
 
+function selectionCard(pair) {
+  const title = styleById.get(pair.style).name + ' · ' + variationFor(pair).name;
+  const palette = paletteFor(pair.colors).name;
+  const card = makeNode('button', 'selection-card');
+  card.type = 'button';
+  card.setAttribute('aria-label', 'Enlarge ' + pairName(pair));
+  card.setAttribute('aria-haspopup', 'dialog');
+  const art = makeNode('span', 'selection-art');
+  art.append(logo(pair), icon('expand'));
+  const caption = makeNode('span', 'selection-caption');
+  caption.append(makeNode('strong', '', title), makeNode('span', '', palette));
+  card.append(art, caption);
+  card.addEventListener('click', () => {
+    byId('detail-heading').textContent = title;
+    byId('detail-palette').textContent = palette;
+    byId('detail-inks').replaceChildren(...swatches(pair.colors));
+    byId('detail-art').replaceChildren(logo(pair, pairName(pair)));
+    byId('selection-dialog').showModal();
+  });
+  const item = makeNode('li');
+  item.append(card);
+  return item;
+}
+
+function renderSelection(pairs) {
+  byId('shared-list').replaceChildren(...pairs.map(selectionCard));
+  byId('clear-selection').hidden = !pairs.length;
+}
+
+function importFeedback(message, unmatched = []) {
+  byId('selection-feedback').textContent = message;
+  byId('unmatched').hidden = !unmatched.length;
+  byId('unmatched').open = false;
+  byId('unmatched-summary').textContent = 'Unrecognized lines (' + unmatched.length + ')';
+  byId('unmatched-lines').textContent = unmatched.join('\n');
+}
+
+function selectionCount(count) {
+  return 'Showing ' + count + (count === 1 ? ' combination.' : ' combinations.');
+}
+
+function restoreSelection() {
+  let pairs = [];
+  try {
+    const data = JSON.parse(storage?.getItem(selectionKey) || '[]');
+    if (Array.isArray(data)) pairs = data.map(normalizePair).filter(Boolean);
+  } catch { /* A missing or unreadable saved selection starts with an empty gallery. */ }
+  renderSelection(pairs);
+  importFeedback(pairs.length ? selectionCount(pairs.length) : '');
+}
+
+function saveSelection(pairs) {
+  renderSelection(pairs);
+  if (!storage) return false;
+  try {
+    if (pairs.length) storage.setItem(selectionKey, JSON.stringify(pairs));
+    else storage.removeItem(selectionKey);
+    return true;
+  } catch { return false; }
+}
+
+byId('selection-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const input = byId('selection-codes');
+  const { pairs, duplicates, unmatched } = parseSelection(input.value);
+  if (!pairs.length) {
+    let message = unmatched.length ? 'No combinations matched. Check the names below.' : 'Paste at least one combination from the email.';
+    if (byId('shared-list').childElementCount) message += ' Your previous selection is still shown.';
+    importFeedback(message, unmatched);
+    input.focus();
+    return;
+  }
+  const saved = saveSelection(pairs);
+  let message = selectionCount(pairs.length);
+  if (duplicates) message += ' Skipped ' + duplicates + (duplicates === 1 ? ' duplicate.' : ' duplicates.');
+  if (unmatched.length) message += ' Some lines didn’t match.';
+  if (!saved) message += ' This selection is available in this tab only.';
+  importFeedback(message, unmatched);
+});
+
+byId('clear-selection').addEventListener('click', () => {
+  const saved = saveSelection([]);
+  byId('selection-codes').value = '';
+  importFeedback(saved ? 'Selection cleared.' : 'Selection cleared in this tab.');
+  byId('selection-codes').focus();
+});
+
 window.addEventListener('storage', event => {
-  if (!storage || event.storageArea !== storage || (event.key !== null && !event.key.startsWith(prefix))) return;
-  try { loadFavorites(); renderFavorites(); } catch { memoryOnly(); }
+  if (!storage || event.storageArea !== storage) return;
+  if (event.key === null || event.key === selectionKey) restoreSelection();
+  if (event.key === null || event.key.startsWith(prefix)) {
+    try { loadFavorites(); renderFavorites(); } catch { memoryOnly(); }
+  }
 });
 
 async function copyList(text) {
@@ -348,3 +440,4 @@ byId('copy-all').addEventListener('click', async () => {
 byId('brand-art').replaceChildren(logo({ style: 'conveyor-flow', colors: initial.colors }));
 select(current, false);
 renderFavorites();
+restoreSelection();

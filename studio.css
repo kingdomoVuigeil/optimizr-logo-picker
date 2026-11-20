@@ -29,6 +29,7 @@ button, a { transition: background-color .15s, border-color .15s, color .15s; }
 .skip:focus { transform: none; }
 .masthead { border-bottom: 1px solid var(--line); background: var(--white); }
 .masthead-inner { display: flex; align-items: center; justify-content: space-between; min-height: 68px; }
+.masthead-links { display: flex; align-items: center; gap: clamp(16px, 3vw, 32px); }
 .brand { display: inline-flex; align-items: center; min-height: 48px; color: var(--blue); text-decoration: none; font-weight: 800; }
 #brand-art { display: flex; width: 128px; }
 #brand-art svg { display: block; width: 100%; }
@@ -100,10 +101,10 @@ figcaption { display: flex; justify-content: space-between; align-items: center;
 .primary { display: inline-flex; align-items: center; justify-content: center; min-height: 49px; width: 100%; border-radius: 8px; gap: 9px; background: var(--blue); color: #fff; font-weight: 660; font-size: .95rem; margin-top: auto; }
 .primary:hover:not(:disabled) { background: #1e2b88; }
 .primary[disabled] { background: #ebedf9; color: var(--blue); }
-.liked { margin: clamp(32px, 4vw, 56px) 0 64px; scroll-margin-top: 16px; }
+.liked { margin: clamp(32px, 4vw, 56px) 0; scroll-margin-top: 16px; }
 .liked-heading, .liked-title, .dialog-head { display: flex; gap: 10px; align-items: center; }
 .liked-heading, .dialog-head { justify-content: space-between; }
-.liked-title h2, .dialog-head h2 { font-size: clamp(1.3rem, 2.35vw, 2rem); letter-spacing: -.05em; font-weight: 680; line-height: 1.15; }
+.liked-title h2, .dialog-head h2, .shared-selection h2 { font-size: clamp(1.3rem, 2.35vw, 2rem); letter-spacing: -.05em; font-weight: 680; line-height: 1.15; }
 .section-count { border: 1px solid var(--line); color: var(--muted); }
 .liked-heading p, #copy-dialog p { color: var(--muted); font-size: .87rem; margin-top: 6px; }
 .secondary { padding: 0 13px; font-size: .86rem; font-weight: 650; flex-shrink: 0; }
@@ -119,10 +120,36 @@ figcaption { display: flex; justify-content: space-between; align-items: center;
 .saved-art { width: 66px; height: 37px; display: grid; place-items: center; flex-shrink: 0; }
 .saved-art > svg { width: 100%; height: 100%; }
 .plain { border-color: transparent; background: transparent; color: var(--muted); }
+.shared-selection { border-top: 1px solid var(--line); padding-top: clamp(25px, 3vw, 42px); margin-bottom: 60px; scroll-margin-top: 12px; }
+#selection-form { max-width: 760px; }
+#selection-form label { display: block; margin: 9px 0 12px; color: var(--muted); font-size: .94rem; line-height: 1.45; }
+#selection-codes { display: block; width: 100%; min-height: 92px; padding: 12px 14px; border: 1px solid #cdd0d4; border-radius: 8px; background: white; color: var(--text); font-size: 1rem; line-height: 1.5; resize: vertical; }
+#selection-codes::placeholder { color: #6c717b; }
+.selection-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 10px; }
+.selection-actions .primary { width: auto; min-height: 44px; padding: 0 19px; }
+#selection-feedback:not(:empty) { margin-top: 16px; color: var(--muted); font-size: .9rem; line-height: 1.45; }
+.unmatched { margin-top: 5px; color: var(--muted); font-size: .9rem; }
+.unmatched summary { cursor: pointer; color: var(--blue); padding: 7px 0; width: fit-content; }
+.unmatched pre { margin: 4px 0 12px; max-height: 10rem; padding: 10px 12px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; background: #fff; border-left: 2px solid var(--line); font: inherit; line-height: 1.5; }
+.selection-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 245px), 1fr)); gap: 12px; }
+.selection-grid:not(:empty) { margin-top: 15px; }
+.selection-grid li { min-width: 0; }
+.selection-card { display: flex; flex-direction: column; width: 100%; height: 100%; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: white; text-align: left; }
+.selection-card:hover { border-color: #949ab7; }
+.selection-art { display: grid; place-items: center; position: relative; width: 100%; height: 126px; padding: 22px 8%; }
+.selection-art > svg:first-child { width: 100%; height: 100%; }
+.selection-art > .icon { position: absolute; right: 9px; top: 9px; width: 15px; height: 15px; color: var(--muted); }
+.selection-caption { display: grid; gap: 5px; width: 100%; flex: 1; align-content: start; padding: 11px 14px 13px; border-top: 1px solid #e5e6e8; font-size: .93rem; line-height: 1.35; overflow-wrap: anywhere; }
+.selection-caption > span { color: var(--muted); font-size: .83rem; }
 dialog { min-width: 0; width: min(660px, calc(100% - 24px)); max-height: min(85dvh,830px); overflow: auto; border: 1px solid var(--line); border-radius: 15px; padding: clamp(15px, 3vw, 26px); color: var(--text); box-shadow: 0 18px 80px #171d3830; }
 dialog::backdrop { background: #14172b64; }
 .dialog-head { margin-bottom: 13px; }
 #styles-dialog { width: min(790px,calc(100% - 24px)); }
+#selection-dialog { width: min(840px, calc(100% - 24px)); }
+.shared-preview { overflow: hidden; border: 1px solid var(--line); border-radius: 10px; }
+#detail-art { display: grid; place-items: center; height: clamp(150px, 38vw, 320px); padding: 18px 7%; background: white; }
+#detail-art svg { width: 100%; height: 100%; }
+.shared-preview figcaption { font-size: .9rem; overflow-wrap: anywhere; }
 #styles-dialog[open] { display: flex; flex-direction: column; overflow: hidden; }
 .gallery-filters { display: flex; gap: 6px; margin-bottom: 13px; }
 .gallery-filters button { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; border: 1px solid transparent; border-radius: 8px; padding: 5px 11px; color: var(--muted); font-size: .86rem; font-weight: 620; }
@@ -171,6 +198,9 @@ dialog::backdrop { background: #14172b64; }
 }
 @media (max-width: 390px) {
   .wrap { width: calc(100% - 24px); }
+  .masthead-links { gap: 12px; }
+  .masthead-links .nav-link { gap: 5px; font-size: .85rem; }
+  #brand-art { width: 98px; }
   .palette { padding: 4px; }
   .palettes { gap: 4px; }
   .palette-name { font-size: .65rem; }
