@@ -382,6 +382,7 @@ byId('selection-form').addEventListener('submit', event => {
   if (unmatched.length) message += ' Some lines didn’t match.';
   if (!saved) message += ' This selection is available in this tab only.';
   importFeedback(message, unmatched);
+  byId('shared-list').firstElementChild.scrollIntoView({ block: 'nearest' });
 });
 
 byId('clear-selection').addEventListener('click', () => {
